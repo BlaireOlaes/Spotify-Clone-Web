@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to top, rgb(0, 0, 0), #5c0000);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .button:hover {
+            background-color: black;
+            color: white;
+            transition: 1s !important;
+        }
+
+        .button {
+            background-color: #8C0303;
+            border: 2px solid white;
+            border-radius: 10px;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+            margin: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="background-color: #2F0000; margin-top: -410px; width: 100%; height: 150px; display: flex; align-items: center; justify-content: space-between;">
+        <img src="your_image_source_here" alt="spotitube" style="margin-left: 50px; margin-top: 25px;">
+        <h1 style="margin-right: 1180px; color: white;">SpotiTube</h1>
+    </div>
+    
+
+    <h2>Congratulations! {{ $user->name }}</h2>
+    <p style="text-align: center">Dear <span style="font-weight: bold">{{ $user->name }}</span>,
+        Great news! Your Spotitube account is verified, and you're officially an artist with us! 🚀🎵
+        Time to share your music and connect with fans worldwide. Let's make waves on Spotitube together!
+        -Spotitube Team</p>
+</body>
+
+</html>
