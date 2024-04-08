@@ -12,7 +12,7 @@ import { Column } from "primereact/column";
 import { Paginator } from "primereact/paginator";
 import { useDropzone } from "react-dropzone";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRedo } from "@fortawesome/free-solid-svg-icons";
+import { faRedo, faPlay, faPause, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Select from "react-select";
 
 import AudioPlayer from "react-h5-audio-player";
@@ -616,7 +616,7 @@ const AuthLayout = () => {
                   " " +
                   new Date(music.created_at).toLocaleTimeString()}
               </p>
-              <Button
+              <button
                 className="playmusicbtn"
                 onClick={() => {
                   if (music) {
@@ -629,17 +629,16 @@ const AuthLayout = () => {
                   }
                 }}
               >
-                {isPlaying && currentMusicId === music.id ? "Pause" : "Play"}
-              </Button>
-              <Button
+                <FontAwesomeIcon icon={isPlaying && currentMusicId === music.id ? faPause : faPlay} />
+              </button>
+              <button
                 className="playmusicbtn"
                 onClick={() => {
                   setMusicToDelete(music.id);
                 }}
               >
-                {" "}
-                Delete{" "}
-              </Button>
+                <FontAwesomeIcon icon={faTrash} />
+              </button>
             </div>
           </div>
         </div>
@@ -647,7 +646,7 @@ const AuthLayout = () => {
     </div>
   </div>
 </div>
-      </div>
+</div>
 
       
       <div className="controler">

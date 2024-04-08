@@ -252,6 +252,18 @@ const Playlist = () => {
     }
   };
   return (
+    <div className="display flex">
+      <div className="adminPanelStyle">
+        <Button onClick={() => navigate("/")} className="custom-buttonmusic1">
+          Home
+        </Button>
+        <Button className="custom-buttonmusic2">
+          Playlist
+        </Button>
+        <Button className="custom-buttonmusic3">Podcast</Button>
+        <Button className="custom-buttonmusic4">Videocast</Button>
+      </div>
+
     <div className="container mx-auto">
       <ToastContainer />
       <Modal show={showAddToPlaylist} onHide={cancelAddToPlaylist}>
@@ -340,13 +352,6 @@ const Playlist = () => {
       </Modal>
 
       <div className="not-verified text-light">
-        <Button
-          variant="success"
-          className="requestbtn"
-          onClick={() => navigate("/")}
-        >
-          Go to Home
-        </Button>
         <div className="containerss">
           <h2>Your Music</h2>
           <div className="buttonss">
@@ -457,6 +462,7 @@ const Playlist = () => {
           />
         </div>
       </div>
+    </div>
     </div>
   );
 };

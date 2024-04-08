@@ -7,11 +7,11 @@ import { toast } from "react-toastify";
 import "../css/styles.css";
 import { useParams, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRedo } from "@fortawesome/free-solid-svg-icons";
+import { faRedo, faPlus, faTrash} from "@fortawesome/free-solid-svg-icons";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import AudioPlayer from "react-h5-audio-player";
-import "react-h5-audio-player/lib/styles.css";
+import "react-h5-audio-player/lib/styles.css";  
 
 const Album = () => {
   const [musics, setMusics] = useState([]);
@@ -258,10 +258,10 @@ const Album = () => {
   return (
     <div className="display flex">
       <div className="adminPanelStyle">
-        <Button className="custom-button">Home</Button>
-        <Button className="custom-button">Playlist</Button>
-        <Button className="custom-button">Podcast</Button>
-        <Button className="custom-button">Videocast</Button>
+        <Button onClick={() => navigate("/")} className="custom-buttonmusic1">Home</Button>
+        <Button className="custom-buttonmusic2">Playlist</Button>
+        <Button className="custom-buttonmusic3">Podcast</Button>
+        <Button className="custom-buttonmusic4">Videocast</Button>
       </div>
 
       <div className="container mx-auto">
@@ -362,18 +362,16 @@ const Album = () => {
               <h2>{altitle}</h2>
             </div>
 
+            
             <div className="buttonss">
-              <Button className="btn2" onClick={openAddToPlaylist}>
-                Add Music to this Album
-              </Button>
-              <Button
-                className="btn2"
-                onClick={() => setShowDeleteConfirmation(true)}
-              >
-                Delete this Album
-              </Button>
-            </div>
-          </div>
+  <button className="playmusicbtn" onClick={openAddToPlaylist}>
+    <FontAwesomeIcon icon={faPlus} />
+  </button>
+  <button className="playmusicbtn ml-3" onClick={() => setShowDeleteConfirmation(true)}>
+    <FontAwesomeIcon icon={faTrash} />
+  </button>
+</div>
+</div>
 
           <DataTable value={filteredMusics} paginator rows={5}>
             <Column field="title" header="Music Title" />
@@ -416,6 +414,7 @@ const Album = () => {
               )}
             />
           </DataTable>
+          
           <div className="controler">
             <AudioPlayer
               ref={playerRef}
@@ -441,7 +440,7 @@ const Album = () => {
                             .title
                         : ""
                     }`
-                  : "Select a Music"
+                  : "Select Music"
               }
               onClickPrevious={playPrevious}
               onClickNext={playNext}

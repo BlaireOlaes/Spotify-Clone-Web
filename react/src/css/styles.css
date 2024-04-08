@@ -379,17 +379,29 @@ th {
 }
 
 .playmusicbtn {
+    border-radius: 50%; /* This makes the button circular */
+    width: 40px; /* Adjust the width and height as needed */
+    height: 40px;
+    color: #DC143C !important;
+    background-color: #000000 !important;
+    border: none; /* Remove button border */
+  }
+  
+  .playmusicbtn:focus {
+    outline: none; /* Remove focus outline */
+  }
+  
+  .playmusicbtn .icon {
+    font-size: 18px; /* Adjust icon size */
+    color: #000000; /* Icon color */
+  }
+
+.playmusicbtn:hover {
     color: #000000 !important;
     background-color: #DC143C !important;
     border-color: #ffffff !important;
-    margin-right: 5px;
-}
-
-.playmusicbtn:hover {
-    color: #DC143C !important;
-    background-color: #000000 !important;
-    border-color: #ffffff !important;
     transition: .5s !important;
+    border-radius: 50% !important;
 }
 
 .timeandduration {
