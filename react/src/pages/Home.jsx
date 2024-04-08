@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import "../css/styles.css";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRedo, faRandom } from "@fortawesome/free-solid-svg-icons";
+import { faRedo, faRandom, faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
 
 import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
@@ -396,85 +396,68 @@ const Home = () => {
             <div className="search-bar-container">
             </div>
 
-            <div
-              className="musicboxcontainer"
-              style={{ overflowY: "auto", maxHeight: "455px" }}
-            >
-              <div>
-                <h4 className="spacingmusic">All Music</h4>
-                <div className="music-container d-flex flex-nowrap overflow-auto">
-                  {filteredMusics.map((music, index) => (
-                    <div className="col-md-3 mb-3 ml-5" key={music.id}>
-                      <div className="card h-75% w-75%">
-                        <div className="card-body">
-                          <p className="card-title">{music.title}</p>
-                          <p className="card-text">
-                            {" "}
-                            {accountsall.find(
-                              (account) => account.id === music.user_id
-                            )?.name || "Unknown Artist"}
-                          </p>
-                          <Button
-                            className="playmusicbtn"
-                            onClick={() => {
-                              if (music) {
-                                if (isPlaying && currentMusicId === music.id) {
-                                  pauseMusic(index);
-                                } else {
-                                  playMusic(music, index);
-                                  setIsPlaying(true);
-                                }
-                              }
-                            }}
-                          >
-                            {isPlaying && currentMusicId === music.id
-                              ? "Pause"
-                              : "Play"}
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <h4 className="spacingmusic">Popular Music</h4>
-                <div className="music-container d-flex flex-nowrap overflow-auto">
-                  {filteredMusics.map((music, index) => (
-                    <div className="col-md-3 mb-3 ml-5" key={music.id}>
-                      <div className="card h-75% w-75%">
-                        <div className="card-body">
-                          <p className="card-title">{music.title}</p>
-                          <p className="card-text">
-                            {" "}
-                            {accountsall.find(
-                              (account) => account.id === music.user_id
-                            )?.name || "Unknown Artist"}
-                          </p>
-                          <Button
-                            className="playmusicbtn"
-                            onClick={() => {
-                              if (music) {
-                                if (isPlaying && currentMusicId === music.id) {
-                                  pauseMusic(index);
-                                } else {
-                                  playMusic(music, index);
-                                  setIsPlaying(true);
-                                }
-                              }
-                            }}
-                          >
-                            {isPlaying && currentMusicId === music.id
-                              ? "Pause"
-                              : "Play"}
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            <div className="musicboxcontainer" style={{ overflowY: "auto", maxHeight: "455px" }}>
+  <div>
+    <h4 className="spacingmusic">All Music</h4>
+    <div className="music-container d-flex flex-nowrap overflow-auto">
+      {filteredMusics.map((music, index) => (
+        <div className="col-md-3 mb-3 ml-5" key={music.id}>
+          <div className="card h-75% w-75%">
+            <div className="card-body">
+              <p className="card-title">{music.title}</p>
+              <p className="card-text">
+                {" "}
+                {accountsall.find((account) => account.id === music.user_id)?.name || "Unknown Artist"}
+              </p>
+              <button className="playmusicbtn" onClick={() => {
+                if (music) {
+                  if (isPlaying && currentMusicId === music.id) {
+                    pauseMusic(index);
+                  } else {
+                    playMusic(music, index);
+                    setIsPlaying(true);
+                  }
+                }
+              }}>
+                {isPlaying && currentMusicId === music.id ? <FontAwesomeIcon icon={faPause} /> : <FontAwesomeIcon icon={faPlay} />}
+              </button>
             </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+  <div>
+    <h4 className="spacingmusic">Popular Music</h4>
+    <div className="music-container d-flex flex-nowrap overflow-auto">
+      {filteredMusics.map((music, index) => (
+        <div className="col-md-3 mb-3 ml-5" key={music.id}>
+          <div className="card h-75% w-75%">
+            <div className="card-body">
+              <p className="card-title">{music.title}</p>
+              <p className="card-text">
+                {" "}
+                {accountsall.find((account) => account.id === music.user_id)?.name || "Unknown Artist"}
+              </p>
+              <button className="playmusicbtn" onClick={() => {
+                if (music) {
+                  if (isPlaying && currentMusicId === music.id) {
+                    pauseMusic(index);
+                  } else {
+                    playMusic(music, index);
+                    setIsPlaying(true);
+                  }
+                }
+              }}>
+                {isPlaying && currentMusicId === music.id ? <FontAwesomeIcon icon={faPause} /> : <FontAwesomeIcon icon={faPlay} />}
+              </button>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
 
             {user && <div className="col-md-3"></div>}
 

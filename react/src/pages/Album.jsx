@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import "../css/styles.css";
 import { useParams, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRedo } from "@fortawesome/free-solid-svg-icons";
+import { faRedo, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import AudioPlayer from "react-h5-audio-player";
@@ -32,6 +32,20 @@ const Album = () => {
   const [altitle, setalbumtitle] = useState();
   const navigate = useNavigate();
   const playerRef = useRef();
+
+const [searchTerm, setSearchTerm] = useState('');
+
+const handleSearchChange = (event) => {
+  setSearchTerm(event.target.value);
+};
+
+const filteredMusics2 = musics.filter(
+  (music) =>
+    music.user_id === user.id &&
+    (music.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (accountsall.find((account) => account.id === music.user_id)?.name || "Unknown Artist").toLowerCase().includes(searchTerm.toLowerCase()))
+);
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -258,10 +272,12 @@ const Album = () => {
   return (
     <div className="display flex">
       <div className="adminPanelStyle">
-        <Button className="custom-button">Home</Button>
-        <Button className="custom-button">Playlist</Button>
-        <Button className="custom-button">Podcast</Button>
-        <Button className="custom-button">Videocast</Button>
+        <Button onClick={() => navigate("/")} className="custom-buttonmusic1">
+          Home
+        </Button>
+        <Button className="custom-buttonmusic2">Playlist</Button>
+        <Button className="custom-buttonmusic3">Podcast</Button>
+        <Button className="custom-buttonmusic4">Videocast</Button>
       </div>
 
       <div className="container mx-auto">
@@ -273,7 +289,8 @@ const Album = () => {
           <Modal.Body className="Playlist-Modal-Body">
             <Form>
               <Form.Group controlId="formPlaylistName">
-                <Form.Label>Playlist Name</Form.Label>
+                <Form.Label>{altitle}</Form.Label>
+                <Form.Control type="text" placeholder="Search" value={searchTerm} onChange={handleSearchChange} />
               </Form.Group>
             </Form>
             <Table striped bordered hover>
@@ -285,7 +302,7 @@ const Album = () => {
                 </tr>
               </thead>
               <tbody>
-                {musics.map((music, index) => (
+                {filteredMusics2.map((music, index) => (
                   <tr key={music.id}>
                     <td>{music.title}</td>
                     <td>
@@ -363,15 +380,15 @@ const Album = () => {
             </div>
 
             <div className="buttonss">
-              <Button className="btn2" onClick={openAddToPlaylist}>
-                Add Music to this Album
-              </Button>
-              <Button
-                className="btn2"
+              <button className="playmusicbtn" onClick={openAddToPlaylist}>
+                <FontAwesomeIcon icon={faPlus} />
+              </button>
+              <button
+                className="playmusicbtn ml-3"
                 onClick={() => setShowDeleteConfirmation(true)}
               >
-                Delete this Album
-              </Button>
+                <FontAwesomeIcon icon={faTrash} />
+              </button>
             </div>
           </div>
 
@@ -388,9 +405,11 @@ const Album = () => {
             <Column
               header="Time Uploaded"
               body={(rowData) =>
-                new Date(rowData.created_at).toLocaleDateString() +
-                " " +
-                new Date(rowData.created_at).toLocaleTimeString()
+                new Date(rowData.created_at).toLocaleDateString("en-US", {
+                  month: "2-digit",
+                  day: "2-digit",
+                  year: "2-digit",
+                })
               }
             />
             <Column
@@ -416,6 +435,7 @@ const Album = () => {
               )}
             />
           </DataTable>
+
           <div className="controler">
             <AudioPlayer
               ref={playerRef}
@@ -441,7 +461,7 @@ const Album = () => {
                             .title
                         : ""
                     }`
-                  : "Select a Music"
+                  : "Select Music"
               }
               onClickPrevious={playPrevious}
               onClickNext={playNext}

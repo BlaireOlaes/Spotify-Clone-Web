@@ -12,7 +12,12 @@ import { Column } from "primereact/column";
 import { Paginator } from "primereact/paginator";
 import { useDropzone } from "react-dropzone";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRedo } from "@fortawesome/free-solid-svg-icons";
+import {
+  faRedo,
+  faPlay,
+  faPause,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import Select from "react-select";
 
 import AudioPlayer from "react-h5-audio-player";
@@ -580,76 +585,92 @@ const AuthLayout = () => {
         </Modal.Footer>
       </Modal>
       <div className="not-verified text-light up">
-        <div className="tot">
-        </div>
+        <div className="tot"></div>
       </div>
-      
-      
+
       <div className="not-verified text-light display flex">
         <div className="adminPanelStyle2">
           <h6>Artist Page</h6>
-          <Button onClick={() => navigate("/")} className="custom-buttonmusic1">Home</Button>
-          <Button onClick={handleShow} className="custom-buttonmusic2">Upload</Button>
-          <Button onClick={openAlbum} className="custom-buttonmusic3">Albums</Button>
+          <Button onClick={() => navigate("/")} className="custom-buttonmusic1">
+            Home
+          </Button>
+          <Button onClick={handleShow} className="custom-buttonmusic2">
+            Upload
+          </Button>
+          <Button onClick={openAlbum} className="custom-buttonmusic3">
+            Albums
+          </Button>
         </div>
 
-        <div className="musicboxcontainer2" style={{ overflowY: "auto", maxHeight: "497px" }}>
-  <div>
-    <h4 className="spacingmusic">Your Music</h4>
-    {/* <input
+        <div
+          className="musicboxcontainer2"
+          style={{ overflowY: "auto", maxHeight: "497px" }}
+        >
+          <div>
+            <h4 className="spacingmusic">Your Music</h4>
+            {/* <input
                   type="text"
                   placeholder="Search Music"
                   value={yourMusicSearchTerm}
                   onChange={handleYourMusicSearchChange}
                   className="search-bar"
                 /> */}
-    <div className="music-container d-flex flex-nowrap overflow-auto">
-      {filteredYourMusicsData.map((music, index) => (
-        <div className="col-md-3 mb-3 ml-5" key={music.id}>
-          <div className="card h-75% w-75%">
-            <div className="card-body">
-              <p className="card-title">{music.title}</p>
-              <p className="card-text">{music.genre}</p>
-              <p className="card-text">{music.album}</p>
-              <p className="card-text">
-                {new Date(music.created_at).toLocaleDateString() +
-                  " " +
-                  new Date(music.created_at).toLocaleTimeString()}
-              </p>
-              <Button
-                className="playmusicbtn"
-                onClick={() => {
-                  if (music) {
-                    if (isPlaying && currentMusicId === music.id) {
-                      pauseMusic(index);
-                    } else {
-                      playMusic(music, index);
-                      setIsPlaying(true);
-                    }
-                  }
-                }}
-              >
-                {isPlaying && currentMusicId === music.id ? "Pause" : "Play"}
-              </Button>
-              <Button
-                className="playmusicbtn"
-                onClick={() => {
-                  setMusicToDelete(music.id);
-                }}
-              >
-                {" "}
-                Delete{" "}
-              </Button>
+            <div className="music-container d-flex flex-nowrap overflow-auto">
+              {filteredYourMusicsData.map((music, index) => (
+                <div className="col-md-3 mb-3 ml-5" key={music.id}>
+                  <div className="card h-75% w-75%">
+                    <div className="card-body">
+                      <p className="card-title">{music.title}</p>
+                      <p className="card-text">{music.genre}</p>
+                      <p className="card-text">{music.album}</p>
+                      <p className="card-text">
+                        {new Date(music.created_at).toLocaleDateString(
+                          "en-US",
+                          {
+                            month: "2-digit",
+                            day: "2-digit",
+                            year: "2-digit",
+                          }
+                        )}
+                      </p>
+                      <button
+                        className="playmusicbtn"
+                        onClick={() => {
+                          if (music) {
+                            if (isPlaying && currentMusicId === music.id) {
+                              pauseMusic(index);
+                            } else {
+                              playMusic(music, index);
+                              setIsPlaying(true);
+                            }
+                          }
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          icon={
+                            isPlaying && currentMusicId === music.id
+                              ? faPause
+                              : faPlay
+                          }
+                        />
+                      </button>
+                      <button
+                        className="playmusicbtn"
+                        onClick={() => {
+                          setMusicToDelete(music.id);
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-      ))}
-    </div>
-  </div>
-</div>
       </div>
 
-      
       <div className="controler">
         <AudioPlayer
           ref={playerRef}
