@@ -8,6 +8,7 @@ use App\Http\Controllers\MusicController;
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\GenreController;
+use App\Http\Controllers\MusicRankController;
 
 
 /*
@@ -82,3 +83,7 @@ Route::get('/genres', [GenreController::class, 'index']);
 Route::get('/audio/{filename}', [App\Http\Controllers\AudioController::class, 'serveAudio']);
 
 Route::get('/music/{filename}', [MusicController::class, 'getMusicFile']);
+
+Route::post('/musicrank', [MusicRankController::class, 'store']);
+
+Route::get('/fetchmusicrank', [MusicRankController::class, 'fetchMusicRank']);

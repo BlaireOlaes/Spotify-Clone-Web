@@ -39,6 +39,11 @@ const Home = () => {
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(10); // Change the number of rows per page as needed
   const [totalRecords, setTotalRecords] = useState(0);
+  const [playTime, setPlayTime] = useState(0);
+  const [musicPlayData, setMusicPlayData] = useState({});
+
+  console.log(playTime);
+  console.log(musicPlayData);
 
   const playerRef = useRef();
 
@@ -71,6 +76,7 @@ const Home = () => {
       artist.toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
+
   useEffect(() => {
     const fetchMusics = async () => {
       try {
@@ -145,7 +151,70 @@ const Home = () => {
     fetchMusic();
   }, [currentMusicId]);
 
+  const sendMusicPlayData = async (data) => {
+    console.log("triggerd");
+    console.log(data.id + "/" + data.name + "/" + data.playTime);
+    try {
+      const tokenResponse = await axios.get("/api/csrf-token");
+      const csrfToken = tokenResponse.data;
+
+      const formData = new FormData();
+      formData.append("music_id", data.id);
+      formData.append("music_name", data.name);
+      formData.append("music_playtime", data.playTime);
+
+      await axios.post("/api/musicrank", formData, {
+        headers: {
+          "X-CSRF-TOKEN": csrfToken,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      console.log(data.id + "/" + data.name + "/" + data.playTime);
+    }
+  };
+
+  const [musicRanks, setMusicRanks] = useState([]);
+
+  useEffect(() => {
+    const fetchMusicRanks = async () => {
+      try {
+        const response = await axios.get("/api/fetchmusicrank");
+        setMusicRanks(response.data);
+        console.log(response.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchMusicRanks();
+  }, []);
+
+  // Rank the filteredMusics based on music_playtime
+  let rankedMusics = [...filteredMusics].sort((a, b) => {
+    const playtimeA =
+      musicRanks.find((rank) => rank.music_id === a.id)?.music_playtime || 0;
+    const playtimeB =
+      musicRanks.find((rank) => rank.music_id === b.id)?.music_playtime || 0;
+    return playtimeB - playtimeA;
+  });
+
   const playMusic = (music = musics[0], index = 0) => {
+    // Check if the music being played is different from the current music
+    if (currentMusicId !== music.id) {
+      // Reset the playTime and musicPlayData states
+
+      if (Object.keys(musicPlayData).length > 0) {
+        sendMusicPlayData(musicPlayData);
+      }
+
+      setPlayTime(0);
+
+      // If musicPlayData is not empty, send it to the server
+
+      setMusicPlayData({});
+    }
+
     setCurrentMusicId(music.id);
     setCurrentMusicIndex(index); // Update the current music index
     setIsPlaying(true);
@@ -449,7 +518,7 @@ const Home = () => {
               <div>
                 <h4 className="spacingmusic">Popular Music</h4>
                 <div className="music-container d-flex flex-nowrap overflow-auto">
-                  {filteredMusics.map((music, index) => (
+                  {rankedMusics.map((music, index) => (
                     <div className="col-md-3 mb-3 ml-5" key={music.id}>
                       {/* yadiman */}
                       <div
@@ -511,7 +580,25 @@ const Home = () => {
                     setIsPlaying(true);
                   }
                 }}
-                onPause={(e) => setIsPlaying(false)}
+                onPause={(e) => {
+                  setIsPlaying(false);
+                }}
+                onListen={(e) => {
+                  setPlayTime((prevTime) => {
+                    const newTime = prevTime + 0.5; // Increase play time by 0.25 every 250ms
+                    const musicName = currentMusicId
+                      ? musics.find((music) => music.id === currentMusicId)
+                          .title
+                      : "";
+
+                    setMusicPlayData({
+                      id: currentMusicId,
+                      name: musicName,
+                      playTime: newTime,
+                    });
+                    return newTime;
+                  });
+                }}
                 showSkipControls={true}
                 showJumpControls={false}
                 header={
@@ -533,7 +620,7 @@ const Home = () => {
                     playNext();
                   }
                 }}
-                key={currentMusicId} // Add this line
+                key={currentMusicId}
                 customAdditionalControls={[
                   <button onClick={toggleLoop}>
                     <FontAwesomeIcon
