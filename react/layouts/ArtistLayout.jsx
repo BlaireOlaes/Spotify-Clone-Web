@@ -7,12 +7,14 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../src/css/styles.css";
 import { useNavigate } from "react-router-dom";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
-import { Paginator } from "primereact/paginator";
 import { useDropzone } from "react-dropzone";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRedo, faPlay, faPause, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faRedo,
+  faPlay,
+  faPause,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import Select from "react-select";
 
 import AudioPlayer from "react-h5-audio-player";
@@ -27,7 +29,6 @@ const AuthLayout = () => {
   const [musics, setMusics] = useState([]);
 
   //music player
-  const [currentAudio, setCurrentAudio] = useState(null);
   const [currentMusicId, setCurrentMusicId] = useState(null);
   const [currentMusicIndex, setCurrentMusicIndex] = useState(0);
   const [isLooping, setIsLooping] = useState(false);
@@ -36,16 +37,10 @@ const AuthLayout = () => {
   const navigate = useNavigate();
   const [musicToDelete, setMusicToDelete] = useState(null);
   const [yourMusicSearchTerm, setYourMusicSearchTerm] = useState("");
-
-  const [first, setFirst] = useState(0);
-  const [rows, setRows] = useState(10);
-  const [totalRecords, setTotalRecords] = useState(0);
-  // const [fileName, setFileName] = useState("Drag or Select the Mp3 file here");
   const [fileName2, setFileName2] = useState(
     "Drag or Select the Image file here"
   );
   const [file, setFile] = useState(null);
-
   const [showAlbum, setShowAlbum] = useState(false);
   const [showAddToAlbum, setShowAddToAlbum] = useState(false);
   const [newAlbumName, setNewAlbumtName] = useState("");
@@ -53,7 +48,7 @@ const AuthLayout = () => {
   const [modalSearchTerm, setModalSearchTerm] = useState("");
   const [addingSongIds, setAddingSongIds] = useState([]);
   const [albums, setAlbums] = useState([]);
-
+  const [isUploading, setIsUploading] = useState(false);
   const [activeInputIndex, setActiveInputIndex] = useState(0);
   const [genresString, setGenresString] = useState("");
   const [playingIndex, setPlayingIndex] = useState(null);
@@ -114,6 +109,8 @@ const AuthLayout = () => {
   const handleYourMusicSearchChange = (event) => {
     setYourMusicSearchTerm(event.target.value);
   };
+
+  console.log(musics);
 
   const fetchAlbums = async () => {
     try {
@@ -227,6 +224,7 @@ const AuthLayout = () => {
       album: "",
       file: null,
       fileName: "Drag or Select the Mp3 file here",
+      musicImage: null, // Add this line
     },
   ]);
 
@@ -272,15 +270,48 @@ const AuthLayout = () => {
     }
   }, [addingSongIds]);
 
+  const MusicImageDropzone = ({ index }) => {
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+      accept: {
+        "image/jpeg": [".jpg", ".jpeg"],
+        "image/png": [".png"],
+      },
+      onDrop: (acceptedFiles) => {
+        if (acceptedFiles.length > 0) {
+          handleImageChange(index, acceptedFiles[0]);
+        }
+      },
+    });
+
+    return (
+      <div {...getRootProps()}>
+        <input {...getInputProps()} />
+        {formData[index].imagePreview ? (
+          <img src={formData[index].imagePreview} alt="Music cover" />
+        ) : (
+          <p>Drag 'n' drop some image here, or click to select image</p>
+        )}
+      </div>
+    );
+  };
+
+  const handleImageChange = (index, file) => {
+    const values = [...formData];
+    values[index].musicImage = file;
+    values[index].imagePreview = URL.createObjectURL(file);
+    setFormData(values);
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+    setIsUploading(true);
     const validFormData = formData.filter(
       (formItem) => formItem.title && formItem.genre && formItem.file
     );
 
     if (validFormData.length === 0) {
       toast.error("Add an MP3 file with title and genre", { autoClose: 3000 });
+      setIsUploading(false);
       return;
     }
 
@@ -296,6 +327,7 @@ const AuthLayout = () => {
       data.append("album", album);
       data.append("file", formItem.file);
       data.append("user_id", user.id);
+      data.append("music_image", formItem.musicImage); // Update this line
 
       try {
         const tokenResponse = await axios.get("/api/csrf-token");
@@ -310,9 +342,11 @@ const AuthLayout = () => {
         if (response.status === 200) {
           return response.data.id;
         } else {
+          setIsUploading(false);
           toast.error(`Failed to upload music ${i + 1}`, { autoClose: 3000 });
         }
       } catch (error) {
+        setIsUploading(false);
         toast.error(`An error occurred while uploading music ${i + 1}`, {
           autoClose: 3000,
         });
@@ -322,8 +356,10 @@ const AuthLayout = () => {
     if (album === "No Album") {
       toast.success("Music Uploaded", { autoClose: 3000 });
       resetInputs();
+      fetchMusics();
+      setIsUploading(false);
       handleClose();
-      await fetchMusics();
+
       setFormData([{ title: "", genre: [], file: null }]);
     } else {
       const uploadedMusicIds = await Promise.all(uploadPromises);
@@ -450,8 +486,10 @@ const AuthLayout = () => {
   const submitAlbum = async () => {
     if (!file) {
       toast.error("Upload an album cover", { autoClose: 3000 });
+      setIsUploading(false);
       return;
     }
+    setIsUploading(true);
     const album = formData[0].album;
     const data = new FormData();
     data.append("album_title", album);
@@ -477,6 +515,7 @@ const AuthLayout = () => {
       if (response.status === 200) {
         toast.success("Album created successfully", { autoClose: 3000 });
         fetchAlbums();
+        setIsUploading(false);
         setShowAddToAlbum(false);
         resetInputs();
         handleClose();
@@ -487,13 +526,16 @@ const AuthLayout = () => {
             album: "",
             file: null,
             fileName: "Drag or Select the Mp3 file here",
+            music_image: null,
           },
         ]);
       } else {
         console.error("An error occurred while creating the album:", response);
+        setIsUploading(false);
       }
     } catch (error) {
       console.error("An error occurred while creating the album:", error);
+      setIsUploading(false);
     }
   };
 
@@ -580,75 +622,100 @@ const AuthLayout = () => {
         </Modal.Footer>
       </Modal>
       <div className="not-verified text-light up">
-        <div className="tot">
-        </div>
+        <div className="tot"></div>
       </div>
-      
-      
+
       <div className="not-verified text-light display flex">
         <div className="adminPanelStyle2">
           <h6>Artist Page</h6>
-          <Button onClick={() => navigate("/")} className="custom-buttonmusic1">Home</Button>
-          <Button onClick={handleShow} className="custom-buttonmusic2">Upload</Button>
-          <Button onClick={openAlbum} className="custom-buttonmusic3">Albums</Button>
+          <Button onClick={() => navigate("/")} className="custom-buttonmusic1">
+            Home
+          </Button>
+          <Button onClick={handleShow} className="custom-buttonmusic2">
+            Upload
+          </Button>
+          <Button onClick={openAlbum} className="custom-buttonmusic3">
+            Albums
+          </Button>
         </div>
 
-        <div className="musicboxcontainer2" style={{ overflowY: "auto", maxHeight: "497px" }}>
-  <div>
-    <h4 className="spacingmusic">Your Music</h4>
-    {/* <input
-                  type="text"
-                  placeholder="Search Music"
-                  value={yourMusicSearchTerm}
-                  onChange={handleYourMusicSearchChange}
-                  className="search-bar"
-                /> */}
-    <div className="music-container d-flex flex-nowrap overflow-auto">
-      {filteredYourMusicsData.map((music, index) => (
-        <div className="col-md-3 mb-3 ml-5" key={music.id}>
-          <div className="card h-75% w-75%">
-            <div className="card-body">
-              <p className="card-title">{music.title}</p>
-              <p className="card-text">{music.genre}</p>
-              <p className="card-text">{music.album}</p>
-              <p className="card-text">
-                {new Date(music.created_at).toLocaleDateString() +
-                  " " +
-                  new Date(music.created_at).toLocaleTimeString()}
-              </p>
-              <button
-                className="playmusicbtn"
-                onClick={() => {
-                  if (music) {
-                    if (isPlaying && currentMusicId === music.id) {
-                      pauseMusic(index);
-                    } else {
-                      playMusic(music, index);
-                      setIsPlaying(true);
-                    }
-                  }
-                }}
-              >
-                <FontAwesomeIcon icon={isPlaying && currentMusicId === music.id ? faPause : faPlay} />
-              </button>
-              <button
-                className="playmusicbtn"
-                onClick={() => {
-                  setMusicToDelete(music.id);
-                }}
-              >
-                <FontAwesomeIcon icon={faTrash} />
-              </button>
+        <div
+          className="musicboxcontainer2"
+          style={{ overflowY: "auto", maxHeight: "497px" }}
+        >
+          <div>
+            <h4 className="spacingmusic">Your Music</h4>
+            <input
+              type="text"
+              placeholder="Search Music"
+              value={yourMusicSearchTerm}
+              onChange={handleYourMusicSearchChange}
+              className="search-bar"
+            />
+            <div className="music-container d-flex flex-nowrap overflow-auto">
+              {filteredYourMusicsData.map((music, index) => (
+                <div className="col-md-3 mb-3 ml-5" key={music.id}>
+                  <div
+                    className="card h-75% w-75% ">
+                    <div className="card-body">
+                    <img
+                            src={`http://127.0.0.1:8000/uploads/${music.music_image}`}
+                            className="music-image"
+                          />
+                      <p className="card-title">{music.title}</p>
+                      <p className="card-text">{music.genre}</p>
+                      <p className="card-text">{music.album}</p>
+                      {/* <img
+                        src={`http://127.0.0.1:8000/uploads/${music.music_image}`}
+                      /> */}
+                      <p className="card-text">
+                        {new Date(music.created_at).toLocaleDateString(
+                          "en-US",
+                          {
+                            month: "2-digit",
+                            day: "2-digit",
+                            year: "2-digit",
+                          }
+                        )}
+                      </p>
+                      <button
+                        className="playmusicbtn mr-2 ml-2"
+                        onClick={() => {
+                          if (music) {
+                            if (isPlaying && currentMusicId === music.id) {
+                              pauseMusic(index);
+                            } else {
+                              playMusic(music, index);
+                              setIsPlaying(true);
+                            }
+                          }
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          icon={
+                            isPlaying && currentMusicId === music.id
+                              ? faPause
+                              : faPlay
+                          }
+                        />
+                      </button>
+                      <button
+                        className="playmusicbtn ml-3"
+                        onClick={() => {
+                          setMusicToDelete(music.id);
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-      ))}
-    </div>
-  </div>
-</div>
-</div>
+      </div>
 
-      
       <div className="controler">
         <AudioPlayer
           ref={playerRef}
@@ -722,6 +789,8 @@ const AuthLayout = () => {
             {formData.map((_, index) => (
               <React.Fragment key={index}>
                 <Form.Group className="mb-3">
+                  <Form.Label>Music Image</Form.Label>
+                  <MusicImageDropzone index={index} />
                   <Form.Label>Music Title</Form.Label>
                   <Form.Control
                     className="add-album-searchbar"
@@ -780,8 +849,12 @@ const AuthLayout = () => {
             >
               Cancel
             </Button>
-            <Button className="btn-confirm" type="submit">
-              Upload
+            <Button
+              className="btn-confirm"
+              type="submit"
+              disabled={isUploading}
+            >
+              {isUploading ? "Uploading..." : "Upload"}
             </Button>
           </Form>
         </Modal.Body>
@@ -816,7 +889,6 @@ const AuthLayout = () => {
                     <td>{album.genre}</td>
                     <td>
                       <img
-                        className="img-albm2"
                         src={`http://127.0.0.1:8000/uploads/${album.image}`}
                       />
                     </td>
