@@ -72,9 +72,15 @@ Route::delete('/musics/{id}', [MusicController::class, 'delete']);
 Route::post('/uploadAlbum', [AlbumController::class, 'store']);
 
 Route::get('/albums', [AlbumController::class, 'index']);
+
 Route::get('/albums/{id}', [AlbumController::class, 'fetchAlbumlistById']);
 
 Route::delete('/albums/{id}', [AlbumController::class, 'delete']);
+
+Route::put('/albums/{id}/restore', [AlbumController::class, 'restore']); // new restore route
+
+Route::delete('/albums/{id}/force', [AlbumController::class, 'forceDelete']);
+
 
 Route::put('/albumsupdate/{id}', [AlbumController::class, 'update']);
 
@@ -87,3 +93,4 @@ Route::get('/music/{filename}', [MusicController::class, 'getMusicFile']);
 Route::post('/musicrank', [MusicRankController::class, 'store']);
 
 Route::get('/fetchmusicrank', [MusicRankController::class, 'fetchMusicRank']);
+

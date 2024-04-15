@@ -33,11 +33,10 @@ class AlbumController extends Controller
 
     public function index()
     {
-        $albums = Album::all();
+        $albums = Album::withTrashed()->get();
         return response()->json($albums);
     }
 
-    
     public function fetchAlbumlistById($id)
     {
         $album = Album::find($id);
@@ -77,5 +76,33 @@ class AlbumController extends Controller
 
         return response()->json(['message' => 'Album Successfully Updated'], 200);
     }
+    public function restore($id)
+    {
+        $album = Album::withTrashed()->find($id);
+
+        if (!$album) {
+            return response()->json(['message' => 'Album not found'], 404);
+        }
+
+        $album->restore();
+
+        return response()->json(['message' => 'Album restored successfully'], 200);
+    }
+
+
+    public function forceDelete($id)
+    {
+        $album = Album::withTrashed()->find($id);
+
+        if (!$album) {
+            return response()->json(['message' => 'Album not found'], 404);
+        }
+
+        $album->forceDelete();
+
+        return response()->json(['message' => 'Album permanently deleted'], 200);
+    }
+
+
 }
 

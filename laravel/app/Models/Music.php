@@ -19,6 +19,14 @@ class Music extends Model
         'genre',
         'album',
         'file',
-        'user_id', // Add this line
+        'user_id',
     ];
+
+    /**
+     * Get the music ranks for the music.
+     */
+    public function musicRanks()
+    {
+        return $this->hasMany('App\Models\MusicRank', 'music_id');
+    }
 }

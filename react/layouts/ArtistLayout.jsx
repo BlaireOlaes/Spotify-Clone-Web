@@ -42,6 +42,7 @@ const AuthLayout = () => {
   );
   const [file, setFile] = useState(null);
   const [showAlbum, setShowAlbum] = useState(false);
+  const [showDeletedAlbums, setShowDeletedAlbums] = useState(false);
   const [showAddToAlbum, setShowAddToAlbum] = useState(false);
   const [newAlbumName, setNewAlbumtName] = useState("");
   const [newAlbumGenre, setNewAlbumGenre] = useState("");
@@ -126,6 +127,43 @@ const AuthLayout = () => {
       music.title.toLowerCase().includes(modalSearchTerm.toLowerCase()) ||
       music.genre.toLowerCase().includes(modalSearchTerm.toLowerCase())
   );
+
+  const restoreAlbum = async (id) => {
+    try {
+      const tokenResponse = await axios.get("/api/csrf-token");
+      const csrfToken = tokenResponse.data;
+      await axios.put(
+        `/api/albums/${id}/restore`,
+        {},
+        {
+          headers: {
+            "X-CSRF-TOKEN": csrfToken,
+          },
+        }
+      );
+      fetchAlbums();
+    } catch (error) {
+      console.error("An error occurred while restoring the album:", error);
+    }
+  };
+
+  const permanentlyDeleteAlbum = async (id) => {
+    try {
+      const tokenResponse = await axios.get("/api/csrf-token");
+      const csrfToken = tokenResponse.data;
+      await axios.delete(`/api/albums/${id}/force`, {
+        headers: {
+          "X-CSRF-TOKEN": csrfToken,
+        },
+      });
+      fetchAlbums(); // Refresh the albums list
+    } catch (error) {
+      console.error(
+        "An error occurred while permanently deleting the album:",
+        error
+      );
+    }
+  };
 
   const fetchMusics = async () => {
     try {
@@ -458,6 +496,14 @@ const AuthLayout = () => {
     setShowAlbum(false);
   };
 
+  const openDeletedAlbums = () => {
+    setShowAlbum(false);
+    setShowDeletedAlbums(true);
+  };
+
+  const closeDeletedAlbums = () => {
+    setShowDeletedAlbums(false);
+  };
   const cancelAddToAlbum = () => {
     setShowAddToAlbum(false);
   };
@@ -655,15 +701,12 @@ const AuthLayout = () => {
             <div className="music-container d-flex flex-nowrap overflow-auto">
               {filteredYourMusicsData.map((music, index) => (
                 <div className="col-md-3 mb-3 ml-5" key={music.id}>
-                  <div
-                    className="card h-75% w-75% "
-                    style={{
-                      backgroundImage: `url(http://127.0.0.1:8000/uploads/${music.music_image})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    }}
-                  >
+                  <div className="card h-75% w-75% ">
                     <div className="card-body">
+                      <img
+                        src={`http://127.0.0.1:8000/uploads/${music.music_image}`}
+                        className="music-image"
+                      />
                       <p className="card-title">{music.title}</p>
                       <p className="card-text">{music.genre}</p>
                       <p className="card-text">{music.album}</p>
@@ -681,7 +724,7 @@ const AuthLayout = () => {
                         )}
                       </p>
                       <button
-                        className="playmusicbtn"
+                        className="playmusicbtn mr-2 ml-2"
                         onClick={() => {
                           if (music) {
                             if (isPlaying && currentMusicId === music.id) {
@@ -702,7 +745,7 @@ const AuthLayout = () => {
                         />
                       </button>
                       <button
-                        className="playmusicbtn"
+                        className="playmusicbtn ml-3"
                         onClick={() => {
                           setMusicToDelete(music.id);
                         }}
@@ -878,7 +921,10 @@ const AuthLayout = () => {
             </thead>
             <tbody>
               {albums
-                .filter((album) => album.user_id === user.id)
+                .filter(
+                  (album) =>
+                    album.user_id === user.id && album.deleted_at === null
+                )
                 .map((album, index) => (
                   <tr
                     key={album.id}
@@ -900,6 +946,7 @@ const AuthLayout = () => {
           </Table>
         </Modal.Body>
         <Modal.Footer className="Playlist-Modal-Header1">
+          <Button onClick={openDeletedAlbums}>Deleted Albums</Button>
           <Button
             className="btn-cancel"
             variant="secondary"
@@ -908,6 +955,52 @@ const AuthLayout = () => {
             Close
           </Button>
         </Modal.Footer>
+      </Modal>
+
+      <Modal show={showDeletedAlbums} onHide={closeDeletedAlbums}>
+        <Modal.Header closeButton className="Playlist-Modal-Header">
+          <Modal.Title>Deleted Albums</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th className="bokk">#</th>
+                <th className="bokk">Album Title</th>
+                <th className="bokk">Genre</th>
+                <th className="bokk">Image</th>
+                <th className="bokk">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {albums
+                .filter(
+                  (album) =>
+                    album.user_id === user.id && album.deleted_at !== null
+                )
+                .map((album, index) => (
+                  <tr key={album.id}>
+                    <td>{index + 1}</td>
+                    <td>{album.album_title}</td>
+                    <td>{album.genre}</td>
+                    <td>
+                      <img
+                        src={`http://127.0.0.1:8000/uploads/${album.image}`}
+                      />
+                    </td>
+                    <td>
+                      <Button onClick={() => restoreAlbum(album.id)}>
+                        Restore
+                      </Button>
+                      <Button onClick={() => permanentlyDeleteAlbum(album.id)}>
+                        Permanent Delete
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </Table>
+        </Modal.Body>
       </Modal>
 
       <Modal show={showAddToAlbum} onHide={cancelAddToAlbum}>

@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import "../css/styles.css";
 import { useParams, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRedo } from "@fortawesome/free-solid-svg-icons";
+import { faRedo, faPlus, faTrash, faPlay, faPause, faTimes } from "@fortawesome/free-solid-svg-icons";
 import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
 
@@ -369,66 +369,72 @@ const Playlist = () => {
           <div className="containerss">
             <h2>{playlisttitle}</h2>
             <div className="buttonss">
-              <Button className="btn2" onClick={openAddToPlaylist}>
-                Add Music
+              <Button className="playmusicbtn2" onClick={openAddToPlaylist}>
+              <FontAwesomeIcon icon={faPlus} />
               </Button>
               <Button
-                className="btn2"
+                className="playmusicbtn2 ml-3"
                 onClick={() => setShowDeleteConfirmation(true)}
               >
-                Delete this Playlist
+                <FontAwesomeIcon icon={faTrash} />
               </Button>
             </div>
           </div>
 
-          <Table striped bordered hover>
-            <thead>
-              <tr></tr>
-              <tr>
-                <th className="bok">Music Title</th>
-                <th className="bok">Artist</th>
-                <th className="bok">Genre</th>
-                <th className="bok">Time Uploaded</th>
-                <th className="bok">Play</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredMusics.map((music, index) => (
-                <tr key={music.id}>
-                  <td className="bok">{music.title}</td>
-                  <td className="bok">
-                    {accountsall.find((account) => account.id === music.user_id)
-                      ?.name || "Unknown Artist"}
-                  </td>
-                  <td className="bok">{music.genre}</td>
-                  <td className="bok">
-                    {new Date(music.created_at).toLocaleDateString("en-US", {
-                      month: "2-digit",
-                      day: "2-digit",
-                      year: "2-digit",
-                    })}
-                  </td>
+          <div
+              className="musicboxcontainer3"
+              style={{ overflowY: "auto", maxHeight: "382px" }}
+            >
+            <Table borderless hover>
+    <thead> 
+      <tr></tr>
+      <tr>
+        <th className="bok">Music Title</th>
+        <th className="bok">Artist</th>
+        <th className="bok">Genre</th>
+        <th className="bok">Date Uploaded</th>
+        <th className="bok">Play / Remove</th>
+      </tr>
+    </thead>
+    <tbody>
+      {filteredMusics.map((music, index) => (
+        <tr key={music.id}>
+          <td className="bok">{music.title}</td>
+          <td className="bok">
+            {accountsall.find((account) => account.id === music.user_id)?.name || "Unknown Artist"}
+          </td>
+          <td className="bok">{music.genre}</td>
+          <td className="bok">
+            {new Date(music.created_at).toLocaleDateString("en-US", {
+              month: "2-digit",
+              day: "2-digit",
+              year: "2-digit",
+            })}
+          </td>
 
-                  <td className="bok">
-                    {isPlaying && currentMusicId === music.id ? (
-                      <Button className="btn-cancel" onClick={pauseMusic}>
-                        Pause
-                      </Button>
-                    ) : (
-                      <Button
-                        className="btn-cancel"
-                        onClick={() => playMusic(music, index)}
-                      >
-                        Play
-                      </Button>
-                    )}
+          <td className="bok">
+            {isPlaying && currentMusicId === music.id ? (
+              <Button className="playmusicbtn2 mr-1" onClick={pauseMusic}>
+                <FontAwesomeIcon icon={faPause} />
+              </Button>
+            ) : (
+              <Button
+                className="playmusicbtn2 mr-1"
+                onClick={() => playMusic(music, index)}
+              >
+                <FontAwesomeIcon icon={faPlay} />
+              </Button>
+            )}
 
-                    <Button className="btn-cancel">Remove</Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+            <Button className="playmusicbtn2 ml-1">
+              <FontAwesomeIcon icon={faTimes} />
+            </Button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </Table> 
+</div>
 
           <div className="controler">
             <AudioPlayer

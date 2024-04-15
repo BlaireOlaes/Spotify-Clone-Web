@@ -379,12 +379,12 @@ th {
 }
 
 .playmusicbtn {
-    border-radius: 50%; /* This makes the button circular */
+    border-radius: 50% !important; /* This makes the button circular */
     width: 40px; /* Adjust the width and height as needed */
     height: 40px;
     color: #DC143C !important;
     background-color: #000000 !important;
-    border: none; /* Remove button border */
+    border: none !important; /* Remove button border */
   }
   
   .playmusicbtn:focus {
@@ -404,6 +404,31 @@ th {
     border-radius: 50% !important;
 }
 
+.playmusicbtn2 {
+    border-radius: 50% !important; /* This makes the button circular */
+    width: 40px; /* Adjust the width and height as needed */
+    height: 40px;
+    color: #000000!important;
+    background-color: #DC143C !important;
+    border: none !important; /* Remove button border */
+  }
+  
+  .playmusicbtn2:focus {
+    outline: none; /* Remove focus outline */
+  }
+  
+  .playmusicbtn2 .icon {
+    font-size: 18px; /* Adjust icon size */
+    color: #000000; /* Icon color */
+  }
+
+.playmusicbtn2:hover {
+    color: #DC143C !important;
+    background-color: #000000 !important;
+    border-color: #ffffff !important;
+    transition: .5s !important;
+    border-radius: 50% !important;
+}
 .timeandduration {
     font-size: 10px !important;
 }
@@ -515,8 +540,11 @@ th {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #8C0303 !important;
+    background-color: #212121 !important;
     padding: 15px !important;
+    border-radius: 10px 10px 0 0;
+    overflow: hidden;
+    border-bottom: 2px solid white;
 }
 
 
@@ -547,7 +575,7 @@ th {
 }
 
 .bok {
-    background-color: #2F0000 !important;
+    background-color: #212121 !important;
     color: white !important;
 }
 
@@ -578,9 +606,9 @@ th {
 }
 
 .img-albm {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
+    width: 100px !important;
+    height: 80px !important;
+    border-radius: 50% !important;
 }
 
 .img-albm2 {
@@ -679,6 +707,12 @@ th {
     margin-left: 15px !important;
 }
 
+.musicboxcontainer3 {
+    background-color: #212121 !important;
+    border-radius: 0 0 10px 10px!important;
+    height: 382x !important;
+}
+
 .music-container {
     padding-right: 400px !important;
 }
@@ -769,3 +803,9 @@ th {
 .card-text{
     color: white !important;
 }
+
+.music-image {
+    width: 140px !important; /* Adjust the width as per your requirement */
+    height: 100px; /* Adjust the height as per your requirement */
+    object-fit: cover; /* Ensures the image covers the specified dimensions */
+}  
