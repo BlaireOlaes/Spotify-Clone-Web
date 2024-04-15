@@ -53,12 +53,14 @@ class MusicController extends Controller
     }
 
 
-
     public function delete($id)
     {
         $music = Music::find($id);
 
         if ($music) {
+            // Delete the related musicrank records
+            $music->musicRanks()->delete();
+
             // Delete the music file from the server
             $file_path = public_path('uploads/' . $music->file);
             if (file_exists($file_path)) {
@@ -66,9 +68,9 @@ class MusicController extends Controller
             }
 
             // Delete the image file from the server
-            $image_path = public_path('uploads/' . $music->music_image); // Update this line
+            $image_path = public_path('uploads/' . $music->music_image);
             if (file_exists($image_path)) {
-                unlink($image_path); // Update this line
+                unlink($image_path);
             }
 
             $music->delete();
@@ -77,7 +79,6 @@ class MusicController extends Controller
             return response()->json(['message' => 'Music not found'], 404);
         }
     }
-
 
 
     public function getMusicFile($filename)

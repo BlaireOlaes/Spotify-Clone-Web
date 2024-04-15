@@ -7,7 +7,14 @@ import { toast } from "react-toastify";
 import "../css/styles.css";
 import { useParams, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRedo, faPlus, faTrash, faTimesCircle} from "@fortawesome/free-solid-svg-icons";
+import {
+  faRedo,
+  faPlus,
+  faTrash,
+  faTimesCircle,
+  faPlay,
+  faPause,
+} from "@fortawesome/free-solid-svg-icons";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import AudioPlayer from "react-h5-audio-player";
@@ -33,18 +40,23 @@ const Album = () => {
   const navigate = useNavigate();
   const playerRef = useRef();
 
-const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
-const handleSearchChange = (event) => {
-  setSearchTerm(event.target.value);
-};
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
 
-const filteredMusics2 = musics.filter(
-  (music) =>
-    music.user_id === user.id &&
-    (music.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (accountsall.find((account) => account.id === music.user_id)?.name || "Unknown Artist").toLowerCase().includes(searchTerm.toLowerCase()))
-);
+  const filteredMusics2 = musics.filter(
+    (music) =>
+      music.user_id === user.id &&
+      (music.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (
+          accountsall.find((account) => account.id === music.user_id)?.name ||
+          "Unknown Artist"
+        )
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()))
+  );
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -290,7 +302,12 @@ const filteredMusics2 = musics.filter(
             <Form>
               <Form.Group controlId="formPlaylistName">
                 <Form.Label>{altitle}</Form.Label>
-                <Form.Control type="text" placeholder="Search" value={searchTerm} onChange={handleSearchChange} />
+                <Form.Control
+                  type="text"
+                  placeholder="Search"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                />
               </Form.Group>
             </Form>
             <Table striped bordered hover>
@@ -393,56 +410,62 @@ const filteredMusics2 = musics.filter(
           </div>
 
           <div
-  className="musicboxcontainer3"
-  style={{ overflowY: "auto", maxHeight: "382px" }}
-  >
-  <Table borderless hover>
-    <thead>
-      <tr>
-        <th className="bok">Music Title</th>
-        <th className="bok">Artist</th>
-        <th className="bok">Genre</th>
-        <th className="bok">Date Uploaded</th>
-        <th className="bok">Play</th>
-      </tr>
-    </thead>
-    <tbody>
-      {filteredMusics.map((music, index) => (
-        <tr key={music.id}>
-          <td className="bok">{music.title}</td>
-          <td className="bok">
-            {accountsall.find((account) => account.id === music.user_id)?.name || "Unknown Artist"}
-          </td>
-          <td className="bok">{music.genre}</td>
-          <td className="bok">
-            {new Date(music.created_at).toLocaleDateString("en-US", {
-              month: "2-digit",
-              day: "2-digit",
-              year: "2-digit",
-            })}
-          </td>
-          <td className="bok">
-            <Button
-              className="playmusicbtn2"
-              onClick={() => {
-                if (music) {
-                  if (isPlaying && currentMusicId === music.id) {
-                    pauseMusic(index);
-                  } else {
-                    playMusic(music, index);
-                    setIsPlaying(true);
-                  }
-                }
-              }}
-            >
-              <FontAwesomeIcon icon={isPlaying && currentMusicId === music.id ? "faPause" : "faPlay"} />
-            </Button>
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </Table>
-</div>
+            className="musicboxcontainer3"
+            style={{ overflowY: "auto", maxHeight: "382px" }}
+          >
+            <Table borderless hover>
+              <thead>
+                <tr>
+                  <th className="bok">Music Title</th>
+                  <th className="bok">Artist</th>
+                  <th className="bok">Genre</th>
+                  <th className="bok">Date Uploaded</th>
+                  <th className="bok">Play</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredMusics.map((music, index) => (
+                  <tr key={music.id}>
+                    <td className="bok">{music.title}</td>
+                    <td className="bok">
+                      {accountsall.find(
+                        (account) => account.id === music.user_id
+                      )?.name || "Unknown Artist"}
+                    </td>
+                    <td className="bok">{music.genre}</td>
+                    <td className="bok">
+                      {new Date(music.created_at).toLocaleDateString("en-US", {
+                        month: "2-digit",
+                        day: "2-digit",
+                        year: "2-digit",
+                      })}
+                    </td>
+                    <td className="bok">
+                      <Button
+                        className="playmusicbtn2"
+                        onClick={() => {
+                          if (music) {
+                            if (isPlaying && currentMusicId === music.id) {
+                              pauseMusic(index);
+                            } else {
+                              playMusic(music, index);
+                              setIsPlaying(true);
+                            }
+                          }
+                        }}
+                      >
+                        {isPlaying && currentMusicId === music.id ? (
+                          <FontAwesomeIcon icon={faPause} />
+                        ) : (
+                          <FontAwesomeIcon icon={faPlay} />
+                        )}
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
 
           <div className="controler">
             <AudioPlayer

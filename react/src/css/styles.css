@@ -809,3 +809,8 @@ th {
     height: 100px; /* Adjust the height as per your requirement */
     object-fit: cover; /* Ensures the image covers the specified dimensions */
 }  
+
+.small-music-image img {
+    width: 100px; /* Adjust the width as needed */
+    height: auto; /* Maintain aspect ratio */
+}

@@ -191,13 +191,15 @@ const Home = () => {
   }, []);
 
   // Rank the filteredMusics based on music_playtime
-  let rankedMusics = [...filteredMusics].sort((a, b) => {
-    const playtimeA =
-      musicRanks.find((rank) => rank.music_id === a.id)?.music_playtime || 0;
-    const playtimeB =
-      musicRanks.find((rank) => rank.music_id === b.id)?.music_playtime || 0;
-    return playtimeB - playtimeA;
-  });
+  let rankedMusics = [...filteredMusics]
+    .sort((a, b) => {
+      const playtimeA =
+        musicRanks.find((rank) => rank.music_id === a.id)?.music_playtime || 0;
+      const playtimeB =
+        musicRanks.find((rank) => rank.music_id === b.id)?.music_playtime || 0;
+      return playtimeB - playtimeA;
+    })
+    .slice(0, 10); // Take only the first 10 items
 
   const playMusic = (music = musics[0], index = 0) => {
     // Check if the music being played is different from the current music
@@ -424,7 +426,7 @@ const Home = () => {
           </Modal.Header>
           <Modal.Body>
             <Table striped bordered hover>
-              <thead>
+              <thead style={{ overflowY: "auto", maxHeight: "50px" }}>
                 <tr>
                   <th className="bokk">#</th>
                   <th className="bokk">Playlist Title</th>
@@ -480,7 +482,7 @@ const Home = () => {
                     <div className="col-md-3 mb-3 ml-5" key={music.id}>
                       <div className="card h-75% w-75%">
                         <div className="card-body">
-                        <img
+                          <img
                             src={`http://127.0.0.1:8000/uploads/${music.music_image}`}
                             className="music-image"
                           />
@@ -517,15 +519,14 @@ const Home = () => {
                 </div>
               </div>
               <div>
-                <h4 className="spacingmusic">Popular Music</h4>
+                <h4 className="spacingmusic">Top 10 Music</h4>
                 <div className="music-container d-flex flex-nowrap overflow-auto">
                   {rankedMusics.map((music, index) => (
                     <div className="col-md-3 mb-3 ml-5" key={music.id}>
                       {/* yadiman */}
-                      <div
-                        className="card h-75% w-75%">
+                      <div className="card h-75% w-75%">
                         <div className="card-body">
-                        <img
+                          <img
                             src={`http://127.0.0.1:8000/uploads/${music.music_image}`}
                             className="music-image"
                           />
